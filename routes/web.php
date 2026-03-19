@@ -1,11 +1,27 @@
 <?php
 
+use App\Http\Controllers\AdminBookController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to tasks
+
+Route::get('/after-login', function () {
+    return redirect()->route('home');
+})->name('dashboard');
+
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    Route::resource('/books', AdminBookController::class);
+    Route::resource('/users', AdminUserController::class)->only(['index', 'destroy']);
+
+});
 Route::get('/', function () {
     return view('welcome');
 })->name('home');

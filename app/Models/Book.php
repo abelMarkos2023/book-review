@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Attribute;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -57,15 +57,13 @@ class Book extends Model
      *
      * Converts storage-relative paths to full asset URLs,
      * while leaving external URLs unchanged.
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
     protected function cover(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => Str::startsWith($value, 'storage')
-                ? asset($value)
-                : $value,
+            get: fn ($value) => $value && ! Str::startsWith($value, ['http', 'storage'])
+                ? asset('storage/'.$value)
+                : ($value ? asset($value) : null),
         );
     }
 
